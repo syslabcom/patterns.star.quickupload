@@ -5,7 +5,6 @@ define([
     "pat-inject",
     "fine-uploader"
 ], function($, registry, Parser, inject) {
-    "use strict";
 
     var parser = new Parser("quickupload");
     parser.add_argument("dropzone-text");
@@ -140,6 +139,7 @@ define([
             });
 
             $el.on('upload', function (ev, id, name) {
+                var i;
                 var dropped_items = $el.find('ul.qq-upload-list').children('li');
                 for (i=0; i<dropped_items.length; i++) {
                     if (dropped_items[i].qqFileId === id) {
@@ -184,6 +184,7 @@ define([
             });
 
             $el.on('complete', function (ev, id, name, response, xhr) {
+                var i;
                 var hide_and_remove_item = function ($item) {
                     $item.hide('slow', function () {
                         $(this).remove();
@@ -203,7 +204,7 @@ define([
                         }
                     }
                 } else {
-                    if (response.error == null) {
+                    if (response.error === null) {
                         if (xhr.status == 504) {
                             response.error = 'The timeout has been exceeded. Please check whether you have a stable StarDesk connection by accessing other pages. If you do, please try again.';
                         } else if (xhr.status == 413) {
