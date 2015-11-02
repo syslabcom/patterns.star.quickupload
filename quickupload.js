@@ -5,6 +5,7 @@ define([
     "pat-inject",
     "fine-uploader"
 ], function($, registry, Parser, inject) {
+    "use strict";
 
     var parser = new Parser("quickupload");
     parser.add_argument("dropzone-text");
@@ -128,7 +129,7 @@ define([
                 ev.stopPropagation();
                 var $parent = $el.parent();
                 $el.replaceWith($original);
-                $parent.trigger('patterns-injected.patterns');
+                registry.scan($original[0], null);
             };
 
             $el.on("click", ".trigger-upload", function (ev) {
@@ -152,7 +153,7 @@ define([
             });
 
             $el.on('submitted', function (ev, id, name, response) {
-                var i;
+                var i, $target;
                 var $panel = $el.find('div.meta-panel');
                 var dropped_items = $el.find('ul.qq-upload-list').children('li');
                 for (i=0; i<dropped_items.length; i++) {
@@ -171,7 +172,6 @@ define([
                     /* refs #719 */
                     $('body').addClass('upload-modal-active');
                     $panel.show(function () {
-                        $panel.trigger('patterns-injected.patterns');
                         $(document).on("keyup.pat-modal", function (ev) {
                             closeModal(ev);
                         });
@@ -179,9 +179,8 @@ define([
                             closeModal(ev);
                         });
                     });
-                } else {
-                    $target.trigger('patterns-injected.patterns');
                 }
+                registry.scan($panel[0], null);
             });
 
             $el.on('complete', function (ev, id, name, response, xhr) {
