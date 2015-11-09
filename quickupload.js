@@ -122,7 +122,8 @@ define([
                 if (ev && ev.type === "keyup" && ev.which !== 27) {
                     return;
                 }
-                $('aside.sidebar').css('overflow', 'auto').css('overflow-x', 'hidden').css('overflow-y', 'auto');
+                /* $('aside.sidebar').css('overflow', 'auto').css('overflow-x', 'hidden').css('overflow-y', 'auto'); */
+                $('aside.sidebar').css('overflow', 'auto');
                 $('body').removeClass('upload-modal-active');
                 ev.preventDefault();
                 ev.stopPropagation();
@@ -132,7 +133,8 @@ define([
             };
 
             $el.on("click", ".trigger-upload", function (ev) {
-                $('aside.sidebar').css('overflow', 'auto').css('overflow-x', 'hidden').css('overflow-y', 'auto');
+                // $('aside.sidebar').css('overflow', 'auto').css('overflow-x', 'hidden').css('overflow-y', 'auto');
+                $('aside.sidebar').css('overflow', 'visible');
                 $('body').removeClass('upload-modal-active');
                 ev.preventDefault();
                 $el.fineUploader('uploadStoredFiles');
@@ -168,7 +170,8 @@ define([
                 }
                 if (!$panel.is(':visible')) {
                     // XXX STAR FIX: Modal cannot show while overflow is active. Disable temporarily
-                    $('aside.sidebar').css('overflow', 'visible').css('overflow-x', 'visible').css('overflow-y', 'visible');
+                    // $('aside.sidebar').css('overflow', 'visible').css('overflow-x', 'visible').css('overflow-y', 'visible');
+                    $('aside.sidebar').css('overflow', 'visible');
                     /* refs #719 */
                     $('body').addClass('upload-modal-active');
                     $panel.show(function () {
