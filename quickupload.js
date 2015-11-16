@@ -5,7 +5,6 @@ define([
     "pat-inject",
     "fine-uploader"
 ], function($, registry, Parser, inject) {
-
     var parser = new Parser("quickupload");
     parser.add_argument("dropzone-text");
     parser.add_argument("ie-fallback-button-text");
@@ -163,7 +162,7 @@ define([
                         $target = $(dropped_items[i]);
                         $target.find('input.qq-edit-tags')
                             .attr('data-pat-autosuggest',
-                                'pre-fill: '+cfgs[0].tags+'; words: '+cfgs[0].tagsAutocomplete);
+                                'pre-fill: '+(cfgs[0].tags||'')+'; words: '+cfgs[0].tagsAutocomplete);
                         $target.find('.qq-edit-file-name').val(name);
                         break;
                     }
@@ -173,8 +172,16 @@ define([
                     // $('aside.sidebar').css('overflow', 'visible').css('overflow-x', 'visible').css('overflow-y', 'visible');
                     $('aside.sidebar').css('overflow', 'visible');
                     /* refs #719 */
+
                     $('body').addClass('upload-modal-active');
                     $panel.show(function () {
+                        // XXX: STAR FIX: The input element gets width from
+                        // container which is set to 1px due to CSS applied to
+                        // modal to hide it.
+                        var $input = $(this).find('.select2-choices input');
+                        if ($input.length) {
+                            $input[0].style.width = "100%";
+                        }
                         $(document).on("keyup.pat-modal", function (ev) {
                             closeModal(ev);
                         });
