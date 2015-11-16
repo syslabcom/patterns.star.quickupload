@@ -18,6 +18,7 @@ define([
     var quickupload = {
         name: "quickupload",
         trigger: '.pat-quickupload',
+
         init: function($el, opts) {
             var $original = $el.clone();
             var cfgs = parser.parse($el, opts, true);
@@ -153,20 +154,29 @@ define([
                 }
             });
 
+            var resizeModal = _.debounce(function () {
+                $(window).trigger('resize.pat-modal-position');
+            }, 100);
+
+            var scanModal = _.debounce(function () {
+                var $panel = $el.find('div.meta-panel');
+                if ($panel.length) {
+                    registry.scan($panel[0], null);
+                }
+            }, 100);
+
             $el.on('submitted', function (ev, id, name, response) {
                 var i, $target;
                 var $panel = $el.find('div.meta-panel');
-                var dropped_items = $el.find('ul.qq-upload-list').children('li');
-                for (i=0; i<dropped_items.length; i++) {
-                    if (dropped_items[i].qqFileId === id) {
-                        $target = $(dropped_items[i]);
+                $el.find('ul.qq-upload-list').children('li').each(function () {
+                    if (this.qqFileId === id) {
+                        $target = $(this);
                         $target.find('input.qq-edit-tags')
                             .attr('data-pat-autosuggest',
                                 'pre-fill: '+(cfgs[0].tags||'')+'; words: '+cfgs[0].tagsAutocomplete);
                         $target.find('.qq-edit-file-name').val(name);
-                        break;
                     }
-                }
+                });
                 if (!$panel.is(':visible')) {
                     // XXX STAR FIX: Modal cannot show while overflow is active. Disable temporarily
                     // $('aside.sidebar').css('overflow', 'visible').css('overflow-x', 'visible').css('overflow-y', 'visible');
@@ -178,10 +188,9 @@ define([
                         // XXX: STAR FIX: The input element gets width from
                         // container which is set to 1px due to CSS applied to
                         // modal to hide it.
-                        var $input = $(this).find('.select2-choices input');
-                        if ($input.length) {
-                            $input[0].style.width = "100%";
-                        }
+                        $(this).find('.select2-choices input').each(function () {
+                            this.style.width = "100%";
+                        });
                         $(document).on("keyup.pat-modal", function (ev) {
                             closeModal(ev);
                         });
@@ -190,7 +199,8 @@ define([
                         });
                     });
                 }
-                registry.scan($panel[0], null);
+                scanModal();
+                resizeModal();
             });
 
             $el.on('complete', function (ev, id, name, response, xhr) {
@@ -235,7 +245,8 @@ define([
             };
             $el.on('onSubmit', scroll_to_bottom);
             $el.on('onError', scroll_to_bottom);
-        }
+        },
+
     };
     registry.register(quickupload);
 
